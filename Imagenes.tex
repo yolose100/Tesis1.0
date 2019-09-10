@@ -1,0 +1,225 @@
+\chapter{Base de datos de Imágenes Satelitales}
+\label{chap:imagenes}
+\section{Descripción de las fuentes de datos}
+Las imágenes fueron obtenidas de la pagina de Planet, el proceso para descargar información de la pagina de Planet fue el siguiente:
+\begin{enumerate}
+    \item Seleccionar el área de interés 
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width = 0.8\textwidth]{images/Imagenes/capturaPlanet.png}
+        \caption{Captura de planet que muestra la selección del área de interés}
+        \label{fig:my_label}
+    \end{figure}
+    De lo anterior se tiene que configurar las siguientes preferencias:
+    \begin{itemize}
+        \item Cobertura de nubes:  0-6\%
+        \item Bandas multiespectrales : 3
+        \item Fecha de Búsqueda:
+    \end{itemize}
+    \item  Hacer el pedido  de las imágenes.
+    \item Especificar la escena que corresponda.
+    
+\end{enumerate}
+
+\definecolor{grey1}{gray}{0.6}
+
+
+
+
+
+
+\section{Zona de Estudio}
+En un estudio provisto por el \gls{MAAP} se definió que existen zonas de deforestación importantes en el sur de la Amazonia peruana (región Madre de Dios). Una de las causas de la deforestación es la minería aurífera entre la carretera Interoceánica y el río Malinowski. La deforestación minera más grave se está extendiendo hacia el este en la zona conocida como La Pampa. Cabe enfatizar que el gobierno peruano acaba de iniciar la “Operación Mercurio 2019” \footnote{https://www.gob.pe/institucion/mininter/noticias/25784-operacion-mercurio-2019-permitira-restituir-el-principio-de-autoridad-en-la-pampa} un operativo multisectorial y integral que tiene como objetivo principal erradicar la minería ilegal y los delitos asociados a ella en la zona de La Pampa, así como impulsar acciones de desarrollo en la región.
+
+El \gls{MAAP}  tambien realizo distintos estudios acerca de la deforestación  causada por la mineria ilegal, determinando que en el año de 2017 se mostro el mayor aumento de deforestacion caisada por mineria aurifera. En dicho estudio se determino que la deforestacion causada pro mineria aurifera fue de unas 9,160 hectareas. A continuacion se detallan algunas de las zonas afectadas 
+\subsection{La Pampa}
+La \figurename~\ref{fig:LaPampa} muestra la deforestación de 1,685 hectáreas por minería aurífera entre el 2017 (panel izquierdo) y el 2018 (panel derecho), en la zona conocida como La Pampa (región de Madre de Dios). Los círculos rojos indican los principales frentes de deforestación.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 1\textwidth]{images/ImagenesMineria/LaPampa.jpg}
+        \caption{Slide de los cambios en la zona de La Pampa}
+
+    \label{fig:LaPampa}
+\end{figure}
+\subsection{ Alto Malinowski}
+
+La \figurename~\ref{fig:AltoMalinowski}  muestra la deforestación de 760 hectáreas por minería aurífera entre el 2017 (panel izquierdo) y el 2018 (panel derecho), en la zona conocida como Alto Malinowski (región de Madre de Dios). Los círculos rojos indican los principales frentes de deforestación.
+
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 1\textwidth]{images/ImagenesMineria/AltoMalinowski.jpg}
+    \caption{Slide de los cambios en la zona de Alto Malinowski}
+    \label{fig:AltoMalinowski}
+\end{figure}{}
+
+
+\subsection{Camanti}
+
+
+
+
+La \figurename~\ref{fig:Camanti}  muestra la deforestación de 335 hectáreas por minería aurífera entre el 2016 (panel izquierdo) y el 2018 (panel derecho), en el distrito de Camanti (región Cusco). Los círculos rojos indican los principales frentes de deforestación. Nótese la creciente proximidad de la minería hacia la Reserva Comunal Amarakaeri\footnote{La Reserva Comunal Amarakaeri (RCAM) tiene una superficie de 402 335,62 hectáreas. Su establecimiento busca contribuir a la protección de las cuencas de los ríos Madre de Dios y Colorado, a fin de asegurar la estabilidad de las tierras y bosques para mantener la calidad y cantidad de agua, el equilibrio ecológico y un ambiente adecuado para el desarrollo de las comunidades nativas Harakmbut}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 1\textwidth]{images/ImagenesMineria/Camanti.jpg}
+    \caption{Slide de los cambios en la zona de Camanti}
+    \label{fig:Camanti}
+\end{figure}{}
+
+\section{Preparación de imágenes}
+\subsection{División de Imágenes}
+La primera parte consta en dividir las imágenes en zonas más pequeñas, para este modelo se decidió partir cada imagen satelital en imágenes más pequeñas de 256 x 256, esto se realizo mediante la librería de GDAL\footnote{GDAL es una biblioteca traductora para formatos de datos geoespaciales ráster y vectoriales} GDAL\_traslate que esta diseñada para el traslado de información de un archivo a otro, sin embargo dado que este comando solo sirve para separar una sección de la imágenes se recorrerá un bucle definido de la siguiente forma
+                 
+\begin{lstlisting}[title = Iteración sobre la Imagen]  
+    imagen = gdal.Open(direccionImagen)
+    band = imagen.GetRasterBand(1)
+    xsize = band.XSize
+    ysize = band.YSize
+    tile_size_x = 256
+    tile_size_y = 256
+    for i in range(0, xsize, tile_size_x):
+        for j in range(0, ysize, tile_size_y):
+\end{lstlisting}
+Para cada una de las iteraciones definidas en el bucle superior se corto una imagen definida por los siguientes parámetros: 
+\begin{itemize}
+    \item \textbf{Formato (-of):} El formato de salida de las imágenes es de GeoTiff cada una de las sub-imágenes esta georeferenciada.
+    \item \textbf{Ventana (-swir):} Este parámetro determina si se utilizara toda la imagen en el proceso de traslado el parametro requiere la siguiente informacion:
+    \begin{itemize}
+        \item \textbf{xoff} Posición inicial del eje x.
+        \item \textbf{yoff} Posición inicial del eje y.
+        \item \textbf{xsize} El tamaño de la imagen en la dimensión x.
+        \item \textbf{ysize} El tamaño de la imagen en la dimensión y.
+    \end{itemize}
+    \item \textbf{Dirección imagen entrada}
+    \item \textbf{Dirección imagen salida}
+\end{itemize}
+Para la preparación de la data de entrenamiento se etiqueto a cada imagen partida con un numero de 5 dígitos.
+\subsection{Etiquetado}
+Se genero data a partir de la herramienta LabelMe en la cual se definen el area de interes mediante un conjunto de poligonos.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.8\textwidth]{images/labelme.png}
+        \caption{Herramienta LabelMe}
+        \label{fig:my_label}
+    \end{figure}  
+\begin{figure}[H]
+	\centering
+	\begin{tabular}{cc}
+		\includegraphics[width=0.3\textwidth]{06changedetection/train_1.jpg} &
+		\includegraphics[width=0.3\textwidth]{06changedetection/label2.png} \\
+		a) Imagen original & b) Mascara 				
+	\end{tabular}
+	\caption{Figuras de muestra utilizadas para el entrenamiento}
+	\label{fig:ProblemasVisionComputacional}
+\end{figure}
+Una vez hecho esto se genero data de entrenamiento adicional mediante las técnicas de aumento de data descritas en la tabla \ref{table:aumentoData} 
+
+\subsection{Descripción Metadata de imágenes}
+
+\begin{table}[H]
+    \centering
+    \resizebox{13cm}{!}{
+
+    \begin{tabular}{|M{0.2\textwidth}|M{0.9\textwidth}|
+   M{0.15\textwidth}|} \hline
+            \rowcolor{grey1}             Atributo & Descripción& Tipo \\ \hline
+
+
+acquired   & El tiempo de adquisición de la imagen en formato RFC 3339.& string \\\hline
+anomalous\_pixel& Porcentaje de píxeles anómalos. Píxeles que tienen problemas de calidad en la imagen documentados en la taxonomía de calidad. Esto se representa espacialmente en el UDM(Unusable Data Mask,Mascara que marca los valores no utilizables de la imagen).& number\\\hline
+
+cloud\_cover & Porcentaje de la imagen cubierta por nubes. & number (0 - 1)\\\hline
+columns & Numero de columnas en la imagen.& number\\\hline
+epsg\_code & Identificador del código del sistema de georeferencia &number\\\hline
+ground\_control  & Si la imagen cumple con las especificaciones de precisión posicional, este valor será verdadero. Si la imagen tiene una precisión posicional incierta, este valor será falso. & boolean\\\hline
+gsd & El Ground Sampling Distance(Distancia entre los centros de píxeles medidos en el suelo) de la imagen.& number\\\hline
+item\_type &El nombre del tipo de elemento que modela el esquema de datos de imágenes compartidas. &string (e.g. “PSScene4Band”)\\\hline
+origin\_x & ULX coordinate of the extent of the data. The coordinate
+references the top left corner of the top left pixel. &number \\\hline
+origin\_y & ULY coordinate of the extent of the data. The coordinate
+references the top left corner of the top left pixel. &number\\\hline
+pixel\_resolution  & La resolución del pixel de la imagen en metros.& number \\\hline
+
+%Desde aquu abajuyo causa 
+provider & Nombre del satélite de procedencia de las imágenes & 
+PlanetScope
+SkySat
+RapidEye
+\\ \hline
+published & Representa la marca de tiempo RFC 3339 en la que el ítem fue agregado a la API & string\\ \hline
+quality\_category	& Métrica para calidad de imagen. Para calificar como calidad “standard”, deben de cumplir con criterios como: altitud del sol $\geq$ 10 grados y ángulo de visión fuera del nadir $<$ 20 grados y píxeles saturados menores al 20\%. Si la imagen no cumple con estos criterios, se califica como calidad de imagen
+“test”. & string: "standard" or  "test"\\ \hline
+rows& Número de filas en la imagen & number	\\ \hline
+satellite\_id& Identificador global único del satélite que adquirió las imágenes subyacentes & string	\\ \hline
+strip\_id& Identificador global único de la tira de imagen con la que se recopiló la escena actual & string	\\ \hline
+sun\_azimuth & Ángulo desde el norte verdadero hasta donde el vector del sol es proyectado en el plano horizontal en grados & number(0-360)\\ \hline
+sun\_elevation & Angulo de elevación del sol en grados & number(0-90)\\ \hline
+updated& Representa la marca de tiempo RFC 3339 en la que el ítem fue actualizado en la API & string\\ \hline
+usable\_data & Relación de la parte utilizable a inutilizable de las imágenes debido a la cubierta de nubes o al relleno negro. & number(0-1)\\ \hline
+view\_angle	& Angulo de visión fuera del nadir a través de la vía espacial utilizado para obtener imágenes, en grados, con + al este y - al oeste.& number(-25 - +25)\\ \hline
+    \end{tabular}}
+    \caption{Características imágenes planet}
+    \label{tab:my_label}
+\end{table}
+
+\subsection{Acerca de planet}
+Planet Labs es una compañía privada de Satélites de Observación de la Tierra basada en San Francisco, California, EE.UU. La compañía diseña y fabrica satélites de miniatura llamados Doves los cuales una vez listos son lanzados en órbita como carga útil secundaria de otras misiones de lanzamiento satelital. Cada Dove está equipado con un telescopio de alta potencia y una cámara programados para capturar diferente franjas de la Tierra. Cada Dove, satélite de observación de la Tierra, escanea continuamente la Tierra, enviando los datos capturados una vez que pase encima de una estación terrestre de recepción. Juntos, Doves forman una constelación de satélite que entrega una imagen completa de la Tierra todos los días en 3–5m de resolución óptica.
+
+Las imágenes colectadas por los Doves, las cuales pueden ser accedidas en línea cuyas algunas son disponibles bajo una política de acceso libre de datos abiertos, proporciona la información actual pertinente para monitorear el clima, los cambios en el uso del suelo, controlar la deforestación, predecir la cosecha de los cultivos, ordenar la planificación urbana y coordinar la respuesta antes desastre. Con la adquisición de la compañía BlackBridge en julio 2015, Planet Labs tuvieron 87 satélites Doves y 5 satélites RapidEye en órbita. En 2017, Planet lanzó unos 88 satélites Doves adicional y Google le vendió su filial Terra Bella con su constelación de satélite SkySat. La combinación de los satélites Doves forma la mayor constelación nunca puesta en órbita. En septiembre 2018, la compañía había lanzado casi 300 satélites, 150 de los cuales son todavía en actividad.
+
+
+\subsection{Proceso de Aumento de Data}
+Para generar la data de entrenamiento se agrego cierto nivel de ruido con el fin de hacer que el modelo tenga información con ruido.
+
+
+
+
+\begin{table}[H]
+\begin{tabular}{|M{0.225\textwidth}|M{0.225\textwidth}|M{0.225\textwidth}|M{0.225\textwidth}|}
+\hline
+Imagen & Descripción&Imagen & Descripción \\ \hline
+
+\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/original.png}          & \scriptsize{\textbf{Original:} Esta es la imagen original sin ningún procesamiento adicional } &\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/shear.png}              & \scriptsize{\textbf{Horizontal Shear:} El proceso consta de transformar la forma de la imagen de un cuadrado a un paralelogramo estirando en un distancia k(0.15\%) la parte inferior a la izquierda  y la parte superior a la derecha, luego de eso se construye la nueva imagen cuadrada obviando las puntas.}         \\ \hline
+
+
+
+\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/arribaAbajo.png}          & \scriptsize{\textbf{Volteo por el eje X :} Se obtiene girando la imagen por el eje x}    &\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/gamma.png}     $K$=15         & \scriptsize{\textbf{Filtro Gamma:} Se aplica la siguiente formula a la imagen \smallskip \newline$ I =I^{\frac{1}{1-K}} $ \smallskip \begin{itemize}
+\itemsep0em 
+ \item I = Imagen Original
+ \item K = Tasa de Cambio
+\end{itemize}  Luego se escala a 255 niveles }            \\ \hline
+
+
+
+
+
+\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/rescale.png}             &\scriptsize{\textbf{Cortado Y Escalado:} Se corta una porción de la imagen y esta se escala para que sea del tamaño original  }    &\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/elsatica.png}              & \scriptsize{\textbf{Transformación elástica:} Se aplico la técnica para generar data basada en el trabajo de~\cite{simard2003best} que consiste en trazar grillas en la imagen, deformar las grillas y a partir de esto deformar la imagen  }           \\ \hline
+
+
+
+
+
+\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/izquierdaDerecha.png}              & \scriptsize{\textbf{Volteo por el eje Y:} Se obtiene girando la imagen por el eje Y} &\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/escaladoBrillo.png}         $K$=0.2        & \scriptsize{\textbf{Escalado del Brillo :} Se aplicara la siguiente formula a la Imagen \newline$ I =Ix(1-K) $  \smallskip \begin{itemize}
+\itemsep0em 
+ \item I = Imagen Original
+ \item K = Tasa de Cambio
+\end{itemize}  }          \\ \hline
+
+
+
+
+\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/rotacion.png} $K$=15     &\scriptsize{\textbf{Rotación :} Se rotara la imagen en un angulo $K$ }    &\includegraphics[width=0.225\textwidth]{06changedetection/tranformaciones/moverBrillo.png} $K$=0.15             & \scriptsize{\textbf{Movimiento de Brillo:} Se aplicara la siguiente formula a la Imagen \newline$ I =I+K*255 $  \smallskip \begin{itemize}
+\itemsep0em 
+ \item I = Imagen Original
+ \item K = Tasa de Cambio\end{itemize}  }          \\ \hline
+ 
+ 
+\end{tabular}
+
+\caption{Tabla de técnicas usadas para aumentar la data inicial}
+\label{table:aumentoData} 
+\end{table}

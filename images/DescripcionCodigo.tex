@@ -1,0 +1,150 @@
+
+\section{Estructura del código fuente}
+
+\begin{center}
+    \begin{forest}
+ dir tree,
+  before drawing tree={
+    for tree={
+      tikz+/.wrap 2 pgfmath args={\node [anchor=west, font=\footnotesize, text=red] at (.east) {L:#1; n:#2};}{level()}{n()}
+    }
+  }
+ [ Proyecto.
+[ datasets.
+[ \_\_init\_\_.py.]
+[ \_\_pycache\_\_.]
+[ salt\_identification.py.
+]]
+[ Final.py.]
+[ fold0-submission.csv.]
+[ last-model-fold3.pth.]
+[ lastModel.pth.]
+[ losses.
+[ \_\_init\_\_.py.]
+[ lovasz\_losses.py.]
+[ \_\_pycache\_\_.]
+]
+[ mitest.py.]
+[ models.
+[ basenet.py]
+[ \_\_init\_\_.py]]]
+\end{forest}
+   \newpage
+
+    \begin{forest}
+ dir tree,
+  before drawing tree={
+    for tree={
+      tikz+/.wrap 2 pgfmath args={\node [anchor=west, font=\footnotesize, text=red] at (.east) {L:#1; n:#2};}{level()}{n()}
+    }
+  }
+ [ Proyecto.
+ [models
+[ inplace\_abn]
+[ oc\_net.py]
+[ \_\_pycache\_\_]
+[ unet.py]]
+[ mytest]
+[ mytrain]
+[ probarIOU.py]
+[ PruebaEnNotebook.ipynb]
+[ README.md]
+[ requerimientos.txt]
+[ runs
+[ fold2
+[ checkpoints
+[ best-accuracy-checkpoint-fold3.pth]
+[ best-loss-checkpoint-fold3.pth]
+[ best-metric-checkpoint-fold3.pth]
+[ last-checkpoint-fold3.pth]]
+]]]
+\end{forest}
+   \newpage
+    \begin{forest}
+ dir tree,
+  before drawing tree={
+    for tree={
+      tikz+/.wrap 2 pgfmath args={\node [anchor=west, font=\footnotesize, text=red] at (.east) {L:#1; n:#2};}{level()}{n()}
+    }
+  } [ Proyecto.
+  [ runs
+[ fold2
+[ models
+[  best-accuracy-model-fold3.pth]
+[ best-loss-model-fold3.pth]
+[ best-metric-model-fold3.pth]
+[ last-model-fold3.pth]
+][ events.out]
+][ fold3]
+[ fold4]
+][ run.sh]
+[ test.py]
+[ train.py]
+[ transforms]
+[ utils]
+]
+\end{forest}
+\end{center}
+\section{Descripción de los archivos}
+En esta sección se describirá brevemente los archivos del sistema
+\subsection{Dataset}
+\label{sub:database}
+Carpeta contenedora del dataLoader\footnote{Herramienta de soporte para cargar los datos en el modelo} el archivo se llama \textbf{saltidentification.py} a continuación se detalla el contenido de cada archivo.
+\begin{itemize}        
+    \item \textbf{\_\_init.py\_\_:} En este archivo se usara como medio de importación en otras carpetas
+    \item \textbf{saltidentification:} Este archivo contiene la información del dataLoader, aquí se definen los modos con los cuales se carga la data, la direcciones se definen en la función \textbf{load\_images\_and\_masks} el cual retorna un diccionario con los siguientes datos 
+    \begin{itemize}
+        \item \textbf{mask:}Este dato represente el groundTruth del resultado de la segmentación. Su tipo de dato un arreglo tipo float32.
+        \item \textbf{image\_id} El identificador de la imagen a procesar.
+        \item \textbf{input} Este dato representa la imagen  a trabajar es un arreglo tipo float32.
+        
+    \end{itemize}
+    
+    En la función \textbf{load\_images\_and\_masks} es donde se reduce la imagen de 256x256 a 128x128, además es la función donde se define el umbral de la binarización para el entrenamiento.
+\end{itemize}
+\subsection{Looses }
+Carpeta donde se encuentran definidas distintas funciones de perdida utilizadas en el entrenamiento, el principal archivo de esta carpeta es \textbf{lovasz\_losses.py} en donde se implementa la función de perdida definida en \cite{yu2015lov}.
+\subsection{Models}
+En este carpeta se define los modelos utilizados para la red neuronal.
+\begin{itemize}
+    \item \textbf{basenet.py} En este red se encuentran definidos todos los encoders que se pueden utilizar :'vgg11', 'vgg13', 'vgg16', 'vgg19','vgg11 \_bn', 'vgg13 \_bn', 'vgg16 \_bn', 'vgg19 \_bn','resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152','resnext101 \_32x4d', 'resnext101 \_64x4d','se \_resnet50', 'se \_resnet101', 'se \_resnet152','se \_resnext50 \_32x4d', 'se \_resnext101 \_32x4d', 'senet154','darknet') , sin embargo las redes que comiensan con VGG tiene un bug, no utilizar.
+    \item  \textbf{oc \_net.py} Definición del decoder, esta implementación esta basada en el articulo de \cite{yuan2018ocnet}
+    \item \textbf{unet.py} En este archivo se ensambla el encoder con su respectivo decoder creando así el modelo de red neuronal ha utilizar para el entrenamiento
+\end{itemize}
+\subsection{mytrain}
+\label{sub:mytrain}
+En esta carpeta se encuentran las imágenes utilizadas para el entrenamiento. Las imágenes en esta carpeta presentan el formato de train\_\textbf{id}.jpg o train\_\textbf{id}.tif donde id representa el identificador de la imagen. Se debe tomar en cuenta que no todas las imagenes en esta carpeta seran utilizadas para el entrenamiento, solamente las imágenes cuyo id este en algún archivo que cumpla la siguiente expresión train\_\textbf{id}.json. 
+Cada imagen que cumpla la condición definida en el parrafo anterior debera de contar con una carpeta con el siguiente formato train\_\textbf{id}\_json  en dicha carpeta se tendrá el archivo \textbf{label.png} que es la mascara de la segmentación usada como groundTrue. La generación de los archivos de imágenes se puede hacer con el script \textbf{Listarjson.py}.
+\subsection{mytest}
+\label{sub:mytest}
+En esta carpeta se encuentran los archivos para el testeo de la aplicación, igual que la carpeta mytrain se presenta el mismo formato que lo anterior.
+
+\subsection{PruebaEnNotebooks.ipynb}
+Archivo que contiene una presentación de validación de resultados,la funcionalidad de este archivo sera mencionado en la subsección \ref{Avances}
+\subsection{runs}
+Carpeta que contiene los modelos de entrenamiento, esta carpeta tiene varias subcarpetas que corresponden a cada uno de los entrenamientos hechos anteriormente:
+
+\subsection{corre.sh}
+\label{sub:corre}
+Este archivo contiene el script necesario para ejecutar el entrenamiento. El contenido del scrip es el siguiente :
+\begin{lstlisting}
+
+python train.py --vtf --pretrained imagenet --loss-on-center --batch-size 6 
+--optim adamw --learning-rate 8    e-4 --lr-scheduler noam --basenet senet154 
+--max-epochs 600 --data-fold fold4 --log-dir runs/fold4 
+--resume runs/fold4/checkpoints/last-checkpoint-fold4.pth
+\end{lstlisting}
+De esto si se desea entrenar de nuevo, es nesesario cambiar de directorio de guardado cambiando fold4 por fold5 u otros.
+
+
+\subsection{tranforms}
+Aquí se encuentran los scripts para el aumento de data y la transformación del numpy a tensores de pytorch.
+\subsection{utils}
+Diferentes scripts que se utilizan en el entrenamiento, los más importantes  son:
+\begin{itemize}
+    \item \textbf{Metrics} Aquí se definen las métricas para las gráficas de iou u la otra pixel acurracy.
+    \item \textbf{adamw} Se define un optimizador.
+\end{itemize}
+\subsection{train.py}
+Este archivo es el que contiene todo el proceso de entrenamiento.
+

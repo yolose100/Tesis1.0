@@ -1,0 +1,70 @@
+
+\usetikzlibrary{shadows}
+
+\lstset{
+  language=bash,
+  basicstyle=\ttfamily
+}
+\newcolumntype{C}[1]{@{}>{\centering\arraybackslash}m{#1}@{}}
+\forestset{ %
+  dir tree/.style={%
+    for tree={%
+      folder,
+      grow'=0,
+      if level=0{align=center}
+      {
+        align={C{50mm}},
+      },
+      font=\sffamily\bfseries\footnotesize,
+      inner xsep=7pt,
+      edge={ultra thick, rounded corners=2pt},
+      fill=white,
+      rounded corners=2pt,
+      drop shadow,
+    },
+  },
+}
+% addaswyd o gôd Sašo Živanović: https://tex.stackexchange.com/a/296771/
+\def\hiddenparcommand{\par}
+\forestset{%
+  declare toks register={split here interject},
+  declare toks register={split here node},
+  declare toks register={split resume here node},
+  split here interject={},
+  split here node={},
+  split resume here node={},
+  to widest/.style={
+    tikz+={\path (\forestregister{tempdima}, \forestoption{y}) -- (\forestregister{tempdimb}, \forestoption{y});},
+  },
+  split dir here/.style={%
+    split here node/.option=name,
+    split here interject={#1},
+    split dir tree,
+    delay={
+      for next node={split dir resume here},
+    },
+  },
+  split dir resume here/.style={%
+    split resume here node/.option=name,
+  },
+  split dir tree/.code={%
+    \forestset{%
+      draw tree stage/.style={
+        for root'={
+          tempdima/.min={x()+min_x()}{tree},
+          tempdimb/.max={x()+max_x()}{tree},
+          for tree={%
+            to widest,
+            if name/.wrap pgfmath arg={{####1}{label={[text=gray, anchor=north, font=\scriptsize]below:{[cont.]}}}{}}{split_here_node},
+            if name/.wrap pgfmath arg={{####1}{edge={densely dotted, gray}, label={[font=\scriptsize, anchor=south, text=gray]above:{[cont.]}}}{}}{split_resume_here_node},
+          },
+        },
+        for nodewalk/.wrap pgfmath arg={{draw tree processing order/.style={name=####1,preceding nodes}}{}}{split_here_node},
+        for root'={draw tree},
+        TeX/.wrap pgfmath arg={\hiddenparcommand ####1\hiddenparcommand}{split_here_interject},
+        for nodewalk/.wrap pgfmath arg={{draw tree processing order/.style={name=####1,following nodes}}{}}{split_resume_here_node},
+        for root'={draw tree},
+      },
+    }
+  }
+}

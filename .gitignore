@@ -1,0 +1,14 @@
+.DS_Store
+.texpadtmp
+*.aux
+*.lof
+*.log
+*.lot
+*.out
+*.pdf
+*.gz
+*.toc
+*.pdf
+*.bak
+*.bbl
+*.blg

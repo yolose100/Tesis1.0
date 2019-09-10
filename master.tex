@@ -1,0 +1,231 @@
+% Modified on May 12, 2018
+% by Christian E. Portugal-Zambrano
+% Hecho por Jesús P. Mena-Chalco 
+% Link http://latex-exemplo.blogspot.pe/2015/11/modelo-latex-para-dissertacoes-e-teses.html
+
+\documentclass[12pt,oneside,a4paper]{book}
+\usepackage[spanish]{babel}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{adjustbox}
+\usepackage{siunitx}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{paralist}
+\usepackage{colortbl}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage[nottoc]{tocbibind}
+\usepackage[font=small,format=plain,labelfont=bf,up,textfont=it,up]{caption}
+\usepackage[usenames,svgnames,dvipsnames]{xcolor}
+\usepackage[a4paper,top=3.5cm,bottom=3.5cm,left=2.5cm,right=2.04cm]{geometry}
+\usepackage[pdftex,plainpages=[false,pdfpagelabels,pagebackref,colorlinks=true,citecolor=Blue,linkcolor=Black,urlcolor=DarkGreen,filecolor=green,bookmarksopen=false]{hyperref} % links coloridos
+\usepackage{type1cm}
+\usepackage{dirtree}
+\usepackage{geometry,array}
+\usepackage[edges]{forest}
+\usepackage{listings}
+\usepackage{blindtext}
+\usepackage{fancyhdr}
+\setlength{\parskip}{4mm}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
+\usepackage[acronym]{glossaries}
+%Personalización  del paquete hyperref
+\hypersetup{
+  %  bookmarks=true,         % show bookmarks bar?
+    unicode=false,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=false,        % show Acrobat’s toolbar?
+    pdfmenubar=false,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdftitle={Modelo computacional de detección de cambios forestales de la selva Amazónica en imágenes satelitales usando aprendizaje profundo},    % title
+    pdfauthor={Elvis Carlos Tellez Mendoza},     % author
+    pdfsubject={Disertación para optar el titulo Profesional de Ingenieria de sistemas },   % subject of the document
+    pdfcreator={},   % creator of the document
+    pdfproducer={LaTex}, % producer of the document
+    pdfkeywords={Algoritmo Genético;} {Redes Neuronales;} {SVM;} {Clasificación de MRI;},% list of keywords
+    pdfnewwindow=true,      % links in new window
+}
+\usepackage{epstopdf}
+\epstopdfDeclareGraphicsRule{.tif}{png}{.png}{convert #1 \OutputFile}
+\AppendGraphicsExtensions{.tif}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{emptypage}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{wrapfig}
+\everymath{\displaystyle}
+\renewcommand{\thefootnote}{\arabic{footnote}}
+\usepackage{url}
+\usepackage{pdfpages}
+\usepackage{cite}
+\usepackage{multirow}
+\usepackage[acronym,shortcuts]{glossaries}
+\graphicspath{{./images/}}
+\urlstyle{same}   
+\setlength\LTcapwidth{\textwidth}  %para evitar  el centrado en los longtable
+\newcommand{\grad}{\hspace{-2mm}$\phantom{a}^{\circ}$}
+%\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+\raggedbottom        % para no permitir espacios extras en el texto
+\fontsize{60}{62}\usefont{OT1}{cmr}{m}{n}{\selectfont}
+\frenchspacing 
+
+\input{Glosario}
+\input{arbolPropiedades}
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+  
+\rule{\textwidth}{4pt} \\ \vspace{-0.68cm}
+\rule{\textwidth}{1pt}
+\vspace{1cm}
+\Large{\textbf{UNIVERSIDAD NACIONAL DE SAN AGUSTÍN}} \\ \vspace{-0.5cm}
+\large{\textbf{FACULTAD DE INGENIERÍA DE PRODUCCIÓN Y SERVICIOS}}
+~\\~\\~\\
+  
+    \includegraphics[width=0.24\textwidth]{logo} \\
+    \vspace*{1cm}
+     \textbf{\Large{Modelo computacional de detección de cambios forestales de la selva Amazónica en imágenes satelitales usando aprendizaje profundo}}\\
+     \vspace*{1cm}
+     \Large{Disertación presentada por:\\}
+     \Large{\textbf{Elvis Carlos Tellez Mendoza}}
+%    
+     \vskip 1cm
+     \Large{Para optar el Titulo Profesional  en:}\\
+     \Large{\textbf{Ingeniería de Sistemas}}\\
+%     \large{\textbf{Mención:}} \large{\textbf{Tecnologías de la Información}}
+    \vskip 1.5cm
+% Programa: Nombre del Programa\\
+ \large{\textbf{Orientador:}}\\
+%     %Coorientador: Prof. Dr. Nome do Coorientador
+% 
+ %  \vskip 0.5cm
+%     %\normalsize{Durante el desarrollo de este trabajo el autor recibió el apoyo de
+%     %...
+    
+    \vskip 1cm
+    \normalsize{Arequipa, 01 de Enero del 2018}\\~\\
+\rule{\textwidth}{1pt} \\ \vspace{-0.3cm}
+\rule{\textwidth}{4pt}
+
+\end{center}
+% ---------------------------------------------------------------------------- %
+% Página de presentación (sólo para la versión final)
+\newpage
+\thispagestyle{empty}
+  \begin{center}
+     \vspace*{2.3 cm}
+        \textbf{\Large{Modelo computacional de detección de cambios en imágenes satelitales usando aprendizaje profundo.}}\\
+        \vspace*{2 cm}
+    \end{center}
+
+    \vskip 2cm
+
+   \begin{flushright}
+          Esta versión final contiene\\
+         las correcciones sugeridas por la \\
+          comisión del jurado durante la defensa realizada\\
+          por Christian E. Portugal Zambrano\\
+          el día \textbf{01 de Enero del 2018.} 
+    \vskip 1cm
+
+    \end{flushright}
+    \vskip 4.2cm
+
+    \begin{quote}
+    \noindent \textbf{Comisión del jurado:}
+    
+    \begin{itemize}
+		\item  
+		\item 
+		\item
+    \end{itemize} 
+    \end{quote}
+    \begin{quote}
+    	\textbf{Orientador:}
+    \end{quote}
+\pagebreak
+\pagenumbering{roman}     % comenzamos a enumerar
+
+% ---------------------------------------------------------------------------- %
+% Agradecimientos
+\chapter*{Agradecimientos}
+
+ 
+\begin{quotation}
+\textbf{Agradezco a Dios por la vida, por guiarme a lo largo de mi existencia, ser el apoyo y fortaleza en aquellos momentos de dificultad y de debilidad.}
+
+\textbf{Gracias a mis padres: Elvis y Victoria  por ser los principales promotores de mis sueños, por confiar y creer en mis expectativas, por los consejos, valores y principios que me han inculcado.}
+
+\textbf{Agradezco a los docentes de la Escuela de Ingeniería de Sistemas de la Universidad Nacional de San Agustin, por haber compartido sus conocimientos a lo largo de estos años, de manera especial, al docente Christian Portugal tutor del proyecto de investigación quien me ha guiado con su paciencia, y su rectitud como docente.}
+\end{quotation}
+
+
+
+% ---------------------------------------------------------------------------- %
+% Resumen
+\chapter*{Resumen}
+\noindent \textbf{Palabras clave:} 
+
+% ---------------------------------------------------------------------------- %
+%% Abstract
+\chapter*{Abstract}
+ Do you know ?
+ 
+\noindent \textbf{Keywords:} 
+%  
+% ---------------------------------------------------------------------------- %
+% Sumário
+\tableofcontents    % imprime el resumen
+
+% ---------------------------------------------------------------------------- %
+
+
+
+
+
+
+%\printglossary[title=Glosario]
+\printglossaries
+\newpage
+
+%\printglossary[type=\acronymtype,title=Abreviaturas]
+%\newpage
+%
+% ---------------------------------------------------------------------------- %
+% Listas de figuras y tablas, estas son creadas automáticamente
+\listoffigures            
+\listoftables            
+
+% ---------------------------------------------------------------------------- %
+% Capítulos del trabajo
+\mainmatter
+
+%Aqui podemos incluir mas capítulos o secciones en diferentes archivos
+%esto para facilitar la lectura del trabajo
+\input{estructuraPython.tex} 
+
+\input{introduccion2.tex}
+
+\include{MarcoTeorico}
+\include{Imagenes}
+
+\include{desarrollo}
+
+\include{Pruebas}
+
+\include{Conclusiones}
+
+\bibliographystyle{IEEEtran}
+ %\bibliographystyle{apalike}
+\bibliography{bibliografia}
+\appendix
+\include{ApendiceA}
+\small
+\small
+\end{document}
